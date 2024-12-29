@@ -73,7 +73,9 @@ class HomeScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _quickActionButton("Add", Icons.add),
+                        _quickActionButton("Add", Icons.add, onTap: () {
+                          Get.toNamed('/add_record'); // navigasi ke AddRecordScreen
+                        }),
                         _quickActionButton("Stats", Icons.bar_chart),
                         _quickActionButton("Report", Icons.swap_horiz),
                         _quickActionButton("Goals", Icons.flag),
@@ -228,24 +230,27 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _quickActionButton(String label, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: Colors.blue),
+  Widget _quickActionButton(String label, IconData icon, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+          children: [
+            Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: Colors.blue),
+            ),
+            SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(color: Colors.white, fontSize: 12),
+            ),
+          ],
         ),
-        SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(color: Colors.white, fontSize: 12),
-        ),
-      ],
     );
   }
 }

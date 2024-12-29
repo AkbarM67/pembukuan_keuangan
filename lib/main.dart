@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pembukuan_keuangan/firebase_options.dart';
 import 'package:pembukuan_keuangan/views/Home_screen.dart';
+import 'package:pembukuan_keuangan/views/add_record_screen.dart';
 import 'package:pembukuan_keuangan/views/login_screen.dart';
 import 'package:pembukuan_keuangan/views/onboarding_screen.dart';
 import 'package:pembukuan_keuangan/views/register_screen.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/login', page: () => LoginScreen()),
         GetPage(name: '/register', page: () => RegisterScreen()),
         GetPage(name: '/home', page: () => HomeScreen()),
+        GetPage(name: '/add_record', page: () => AddRecordScreen())
       ],
     );
     
