@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "825184842843",
+    "project_id": "pembukuankeuangan-92dc0",
+    "storage_bucket": "pembukuankeuangan-92dc0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825184842843:android:ada0fb437971ae8cadfb7e",
+        "android_client_info": {
+          "package_name": "com.AkbarM.pembukuan_keuangan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB10ED20scRdfEq2k1B1GMOCMpGXrYZrr4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
