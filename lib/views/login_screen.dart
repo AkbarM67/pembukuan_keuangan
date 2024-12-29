@@ -12,22 +12,22 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             Center(
               child: Container(
-                height: 40,
-                width: 40,
+                height: 60,
+                width: 60,
                 decoration: BoxDecoration(
-                  color: Colors.blue, // Latar belakang biru
+                  color: Colors.blue,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12), // Agar gambar memiliki sudut membulat
+                  borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
                     'asset/Icon_login.png',
                     fit: BoxFit.cover,
@@ -35,36 +35,30 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
-
-            // Selamat Datang Text
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               "Selamat Datang",
-              textAlign: TextAlign.start,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               "Masukkan email dan password untuk melanjutkan.",
-              textAlign: TextAlign.start,
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 14,
               ),
             ),
-            SizedBox(height: 35),
-
-            // Input Email
+            const SizedBox(height: 35),
             TextField(
               controller: emailController,
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: "Email",
-                labelStyle: TextStyle(color: Colors.black),
+                labelStyle: const TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: const Color.fromARGB(255, 212, 211, 211),
                 border: OutlineInputBorder(
@@ -73,16 +67,14 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 16),
-
-            // Input Password
+            const SizedBox(height: 16),
             TextField(
               controller: passwordController,
               obscureText: true,
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: "Password",
-                labelStyle: TextStyle(color: Colors.black),
+                labelStyle: const TextStyle(color: Colors.black),
                 filled: true,
                 fillColor: const Color.fromARGB(255, 212, 211, 211),
                 border: OutlineInputBorder(
@@ -91,13 +83,11 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 30),
-
-            // Tombol Masuk
+            const SizedBox(height: 30),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(18, 86, 214, 100),
-                padding: EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: const Color.fromRGBO(18, 86, 214, 1),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -116,13 +106,10 @@ class LoginScreen extends StatelessWidget {
                 }
 
                 try {
-                  // Firebase Authentication
                   await _auth.signInWithEmailAndPassword(
                     email: email,
                     password: password,
                   );
-
-                  // Tampilkan notifikasi berhasil
                   Get.snackbar(
                     "Login Berhasil",
                     "Selamat datang!",
@@ -130,9 +117,7 @@ class LoginScreen extends StatelessWidget {
                     backgroundColor: Colors.green,
                     colorText: Colors.white,
                   );
-
-                  // Navigasi ke halaman home
-                  Get.toNamed('/home');
+                  Get.offAllNamed('/home');
                 } catch (e) {
                   Get.snackbar(
                     "Error",
@@ -143,47 +128,43 @@ class LoginScreen extends StatelessWidget {
                   );
                 }
               },
-              child: Text(
+              child: const Text(
                 "Masuk",
                 style: TextStyle(fontSize: 16, color: Colors.white),
               ),
             ),
-            SizedBox(height: 16),
-
-            // Atau
+            const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: Divider(color: Colors.grey)),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                const Expanded(child: Divider(color: Colors.grey)),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     "atau",
                     style: TextStyle(color: Colors.grey),
                   ),
                 ),
-                Expanded(child: Divider(color: Colors.grey)),
+                const Expanded(child: Divider(color: Colors.grey)),
               ],
             ),
-            SizedBox(height: 50),
-
-            // Tombol Masuk Dengan Google
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(218, 228, 221, 221),
-                padding: EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
               onPressed: () {
-                // Aksi saat tombol login dengan Google ditekan
+                // Implementasi login dengan Google
               },
               icon: Image.asset(
                 'asset/flat-color-icons_google.png',
                 height: 24,
                 width: 24,
               ),
-              label: Text(
+              label: const Text(
                 "Masuk Dengan Google",
                 style: TextStyle(
                   color: Colors.black,
@@ -191,18 +172,16 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Spacer(),
-
-            // Belum punya akun? Daftar Sekarang
+            const SizedBox(height: 30),
             Center(
               child: Text.rich(
                 TextSpan(
                   text: "Belum punya akun? ",
-                  style: TextStyle(color: Colors.grey),
+                  style: const TextStyle(color: Colors.grey),
                   children: [
                     TextSpan(
                       text: "Daftar Sekarang",
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.bold,
                       ),

@@ -1,60 +1,50 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AddRecordController extends GetxController {
-  var isIncome = true.obs; // State untuk toggle pemasukan/pengeluaran
-  var amount = ''.obs; // State untuk nominal
-  var note = ''.obs; // State untuk catatan
-  var selectedCategory = 'Food & Drink'.obs; // State untuk kategori
+  // Mengelola apakah pemasukan atau pengeluaran
+  RxBool _isIncome = true.obs;
+  bool get isIncome => _isIncome.value;
 
-  // Fungsi untuk toggle pemasukan/pengeluaran
-  void toggleIncome(bool income) {
-    isIncome.value = income;
+  // Mengelola nominal
+  RxString _amount = ''.obs;
+  String get amount => _amount.value;
+
+  // Mengelola note (catatan)
+  RxString _note = ''.obs;
+  String get note => _note.value;
+
+  // Mengelola kategori
+  RxString _selectedCategory = 'Pilih Kategori'.obs;
+  String get selectedCategory => _selectedCategory.value;
+
+  // Metode untuk memperbarui pemasukan/pengeluaran
+  void toggleIncome(bool value) {
+    _isIncome.value = value;
   }
 
-  // Fungsi untuk mengupdate nominal
+  // Metode untuk memperbarui nominal
   void updateAmount(String value) {
-    amount.value = value;
+    _amount.value = value;
   }
 
-  // Fungsi untuk mengupdate note
+  // Metode untuk memperbarui note
   void updateNote(String value) {
-    note.value = value;
+    _note.value = value;
   }
 
-  // Fungsi untuk memilih kategori
+  // Metode untuk memilih kategori
   void selectCategory(String category) {
-    selectedCategory.value = category;
+    _selectedCategory.value = category;
   }
 
-  // Simpan data ke database (contoh aksi)
-  void saveRecord() {
-    if (amount.value.isEmpty || note.value.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Nominal dan catatan tidak boleh kosong",
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
+  // Simpan record ke database (simulasi)
+  void saveRecord({required int nominal, required String note, required String category}) {
+    print("Data yang disimpan:");
+    print("Nominal: $nominal");
+    print("Catatan: $note");
+    print("Kategori: $category");
+    print("Tipe: ${isIncome ? "Pemasukan" : "Pengeluaran"}");
 
-    // Simulasi menyimpan data
-    print("Data Disimpan:");
-    print("Jenis: ${isIncome.value ? "Pemasukan" : "Pengeluaran"}");
-    print("Nominal: ${amount.value}");
-    print("Catatan: ${note.value}");
-    print("Kategori: ${selectedCategory.value}");
-
-    // Tampilkan notifikasi berhasil
-    Get.snackbar(
-      "Berhasil",
-      "Record berhasil disimpan!",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
-
-    // Kembali ke halaman sebelumnya
-    Get.back();
+    // TODO: Tambahkan logika untuk menyimpan ke database di sini
   }
 }
