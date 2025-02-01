@@ -2,8 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pembukuan_keuangan/firebase_options.dart';
+import 'package:pembukuan_keuangan/controllers/add_record_controller.dart';
+import 'package:pembukuan_keuangan/controllers/kategori_controller.dart';
 import 'package:pembukuan_keuangan/views/home_screen.dart';
 import 'package:pembukuan_keuangan/views/add_record_screen.dart';
+import 'package:pembukuan_keuangan/views/kategori_screen.dart';
 import 'package:pembukuan_keuangan/views/login_screen.dart';
 import 'package:pembukuan_keuangan/views/onboarding_screen.dart';
 import 'package:pembukuan_keuangan/views/register_screen.dart';
@@ -14,6 +17,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Inisialisasi controller global
+  Get.put(CategoryController());
+  Get.put(AddRecordController());
+
   runApp(const MyApp());
 }
 
@@ -28,11 +36,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       getPages: [
         GetPage(name: '/', page: () => SplashScreen()),
-        GetPage(name: '/onboarding', page: () =>  OnboardingScreen()),
+        GetPage(name: '/onboarding', page: () => OnboardingScreen()),
         GetPage(name: '/login', page: () => LoginScreen()),
         GetPage(name: '/register', page: () => RegisterScreen()),
         GetPage(name: '/home', page: () => HomeScreen()),
         GetPage(name: '/add_record', page: () => AddRecordScreen()),
+        GetPage(name: '/kategori', page: () => CategorySelectionScreen())
       ],
     );
   }

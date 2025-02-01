@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pembukuan_keuangan/controllers/add_record_controller.dart';
+import 'package:pembukuan_keuangan/controllers/kategori_controller.dart';
+import 'package:pembukuan_keuangan/views/kategori_screen.dart';
 
 class AddRecordScreen extends StatelessWidget {
   final AddRecordController controller = Get.put(AddRecordController());
+  final CategoryController categoryController = Get.find<CategoryController>();
+
+  // Format currency (untuk nominal)
+  String currencyFormat(int value) {
+    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'IDR ', decimalDigits: 0);
+    return formatter.format(value);
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +114,7 @@ class AddRecordScreen extends StatelessWidget {
                   // Category Selector
                   GestureDetector(
                     onTap: () {
-                      controller.selectCategory("Food & Drink");
+                      Get.to(() => CategorySelectionScreen()); // Navigasi ke layar pemilihan kategori
                     },
                     child: Obx(
                       () => Container(
@@ -119,7 +131,9 @@ class AddRecordScreen extends StatelessWidget {
                                 const Icon(Icons.grid_view, color: Colors.grey),
                                 const SizedBox(width: 8),
                                 Text(
-                                  controller.selectedCategory,
+                                  categoryController.selectedCategory.value.isEmpty
+                                      ? "Choose a category"
+                                      : categoryController.selectedCategory.value,
                                   style: const TextStyle(color: Colors.black),
                                 ),
                               ],
@@ -205,7 +219,7 @@ class AddRecordScreen extends StatelessWidget {
                   'isIncome': controller.isIncome,
                 };
 
-                print("Mengirim data transaksi: $transaction"); // Debug log
+                print("Mengirim data transaksi: $transaction."); // Debug log
 
                 // Kirim data ke HomeScreen
                 Get.back(result: transaction);

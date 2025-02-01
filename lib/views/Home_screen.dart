@@ -1,58 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pembukuan_keuangan/controllers/balance_controller.dart';
+import 'package:pembukuan_keuangan/controllers/home_controller.dart';
+import 'package:pembukuan_keuangan/models/transaction_model.dart';
 import 'package:pembukuan_keuangan/views/add_record_screen.dart';
-
-class HomeController extends GetxController {
-  var userName = ''.obs; // Nama pengguna
-  var transactions = <Map<String, dynamic>>[].obs; // Daftar transaksi
-
-  // Simulasi mengambil nama pengguna
-  void fetchUserName(String name) {
-    userName.value = name;
-  }
-
-  // Tambahkan transaksi baru
-  void addTransaction(Map<String, dynamic> transaction) {
-    transactions.add(transaction);
-  }
-}
+import 'package:pembukuan_keuangan/views/history_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final BalanceController balanceController = Get.put(BalanceController());
   final HomeController controller = Get.put(HomeController());
 
+  HomeScreen({Key? key}) : super(key: key);
+
+  // Format mata uang
+  String currencyFormat(int value) {
+    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'IDR ', decimalDigits: 0);
+    return formatter.format(value);
+  }
+
   void navigateToAddRecord() async {
     final result = await Get.to(() => AddRecordScreen());
 
-    if (result != null && result is Map<String, dynamic>) {
-      // Ambil data dari result
-      final int nominal = result['nominal'] ?? 0;
-      final String note = result['note'] ?? '';
-      final String category = result['category'] ?? '';
-      final bool isIncome = result['isIncome'] ?? true;
+    // Debugging
+    print("Result dari AddRecordScreen: $result");
 
-      // Perbarui saldo berdasarkan pemasukan/pengeluaran
-      if (isIncome) {
-        balanceController.addIncome(nominal);
+    if (result != null) {
+      if (result is Map<String, dynamic>) {
+        // Buat TransactionModel dari result
+        final transaction = TransactionModel(
+          nominal: result['nominal'] ?? 0,
+          note: result['note'] ?? '',
+          category: result['category'] ?? '',
+          isIncome: result['isIncome'] ?? true,
+          date: result['date'] ?? DateTime.now(), // Ambil dari result, atau default ke DateTime.now()
+        );
+
+        // Debugging
+        print("TransactionModel berhasil dibuat: ${transaction.toMap()}");
+
+        // Update saldo dan daftar transaksi
+        if (transaction.isIncome) {
+          balanceController.addIncome(transaction.nominal);
+        } else {
+          balanceController.addExpense(transaction.nominal);
+        }
+        controller.addTransaction(transaction);
       } else {
-        balanceController.addExpense(nominal);
+        print("Result bukan format yang valid untuk TransactionModel.");
       }
-
-      // Tambahkan data transaksi ke daftar
-      controller.addTransaction({
-        'nominal': nominal,
-        'note': note,
-        'category': category,
-        'isIncome': isIncome,
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200], // Latar belakang utama
+      backgroundColor: Colors.grey[200],
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -60,68 +63,7 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header Section
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Greeting dan Saldo
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Obx(
-                              () => Text(
-                                "Halo, ${controller.userName.value}",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Obx(
-                              () => Text(
-                                "IDR ${balanceController.totalBalance.value}",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        // Foto Profil
-                        const CircleAvatar(
-                          radius: 25,
-                          backgroundImage: AssetImage(
-                            'assets/images/profile.png',
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    // Tombol Aksi Cepat
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _quickActionButton("Add", Icons.add, onTap: navigateToAddRecord),
-                        _quickActionButton("Stats", Icons.bar_chart),
-                        _quickActionButton("Report", Icons.swap_horiz),
-                        _quickActionButton("Goals", Icons.flag),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              _buildHeader(),
               const SizedBox(height: 24),
 
               // Daftar Transaksi
@@ -133,40 +75,7 @@ class HomeScreen extends StatelessWidget {
                           itemCount: controller.transactions.length,
                           itemBuilder: (context, index) {
                             final transaction = controller.transactions[index];
-                            final isIncome = transaction['isIncome'] ?? true;
-
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                leading: Icon(
-                                  isIncome ? Icons.arrow_circle_up : Icons.arrow_circle_down,
-                                  color: isIncome ? Colors.green : Colors.red,
-                                ),
-                                title: Text(
-                                  "IDR ${transaction['nominal']}",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Text(transaction['note']),
-                                trailing: Text(
-                                  transaction['category'],
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            );
+                            return _buildTransactionTile(transaction);
                           },
                         ),
                 ),
@@ -175,16 +84,63 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
-          BottomNavigationBarItem(icon: Icon(Icons.credit_card), label: "Cards"),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: "Account"),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  // Header
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Obx(() => Text(
+                        "Halo, ${controller.userName.value}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                  const SizedBox(height: 8),
+                  Obx(() => Text(
+                        currencyFormat(balanceController.totalBalance),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                ],
+              ),
+              const CircleAvatar(
+                radius: 25,
+                backgroundImage: AssetImage('assets/images/profile.png'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _quickActionButton("Add", Icons.add, onTap: navigateToAddRecord),
+              _quickActionButton("Stats", Icons.bar_chart),
+              _quickActionButton("Report", Icons.swap_horiz),
+              _quickActionButton("Goals", Icons.flag),
+            ],
+          ),
         ],
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
       ),
     );
   }
@@ -213,4 +169,45 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+  // Tile Transaksi
+  Widget _buildTransactionTile(TransactionModel transaction) {
+    return ListTile(
+      leading: Icon(
+        transaction.isIncome ? Icons.arrow_circle_up : Icons.arrow_circle_down,
+        color: transaction.isIncome ? Colors.green : Colors.red,
+      ),
+      title: Text(
+        transaction.category,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(transaction.note),
+      trailing: Text(
+        currencyFormat(transaction.nominal),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+          color: transaction.isIncome ? Colors.green : Colors.red,
+        ),
+      ),
+    );
+  }
+
+  // Bottom Navigation Bar
+Widget _buildBottomNavigationBar() {
+  return Obx(
+    () => BottomNavigationBar(
+      currentIndex: controller.selectedIndex.value,
+      onTap: (index) => controller.changeTabIndex(index),
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
+        BottomNavigationBarItem(icon: Icon(Icons.credit_card), label: "Cards"),
+        BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: "Account"),
+      ],
+      selectedItemColor: Colors.blue,
+      unselectedItemColor: Colors.grey,
+    ),
+  );
+}
 }
